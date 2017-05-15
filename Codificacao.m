@@ -33,7 +33,7 @@
         VetorComTrc(7) = ConteudoArquivo(i+6);
         VetorComTrc(8) = ConteudoArquivo(i+7);         
 
-        Filecodif = fopen('BitsComTRC.bin', 'a+');
-        fwrite(Filecodif, VetorComTrc, 'uint8');
+        Filecodif = fopen('BitsComTRC.bin', 'a');
+        fwrite(Filecodif, VetorComTrc, 'ubit1');
         fclose(Filecodif);
     end
