@@ -25,7 +25,7 @@
             VetorTemporario(length(VetorTemporario)+1) = 1;
         end
     end
-    
+
     Filecodif = fopen('BitsComTRC.bin', 'wb');
     fwrite(Filecodif, VetorTemporario, 'ubit1');
     fclose(Filecodif);
