@@ -1,14 +1,20 @@
     clc
     clear all
 
-    IDarquivo = fopen('BitsCorrompidosComTRC.bin', 'r'); 
-    ConteudoArquivo = uint8(fread(IDarquivo, [1, inf], 'ubit1'));
-    Contador = length(ConteudoArquivo);
-
-    for i = Contador:-1:1
-        if (mod(i,9) == 0)
-           Contador = i;
-           break
+    [FileName, PatchName] = uigetfile('*', 'Selecione o arquivo');
+    diretorio = strcat(PatchName, FileName);
+    
+    IDarquivo = fopen(diretorio); 
+    BitsCorrompidosComTRC = uint8(fread(IDarquivo, [1, inf], 'ubit1'));
+    Tam = length(BitsCorrompidosComTRC);
+    
+    for p = 7:-1:0
+        x = (Tam - p)/9;
+        
+        if (round(x) == x)
+            Contador = 9*x;
+            Padding = p;
+            break
         end
     end
     
@@ -16,12 +22,12 @@
     
     for i = 1:9:Contador
         if (i == 1)
-            VetorTemporario = ConteudoArquivo(i:i+7);
+            VetorTemporario = BitsCorrompidosComTRC(i:i+7);
         else
-            VetorTemporario = cat(2,VetorTemporario,ConteudoArquivo(i:i+7));
+            VetorTemporario = cat(2,VetorTemporario,BitsCorrompidosComTRC(i:i+7));
         end
         
-        ContadorDeUm = numel(find(ConteudoArquivo(i:i+7) == 1));
+        ContadorDeUm = numel(find(BitsCorrompidosComTRC(i:i+7) == 1));
         
         if (mod(ContadorDeUm, 2) ~= 0)
             VetorTemporario(length(VetorTemporario)+1) = 0;
@@ -29,7 +35,15 @@
             VetorTemporario(length(VetorTemporario)+1) = 1;
         end
     end
-    
-    Padding = zeros(1, (length(ConteudoArquivo) - Contador));
-    VetorTemporario = cat(2,VetorTemporario,Padding);    
-    BitCorrompido = find(xor(ConteudoArquivo, VetorTemporario) == 1);
+   
+    if (Padding ~= 0)
+        if (Padding > 1)
+            Padding = zeros(1,Padding);
+            VetorTemporario = cat(2,VetorTemporario,Padding);
+        else
+            VetorTemporario = cat(2,VetorTemporario,Padding);
+        end
+    end
+  
+    BitsCorrompidos = numel(find(xor(BitsCorrompidosComTRC, VetorTemporario) == 1));
+    BitsCorrompidos
