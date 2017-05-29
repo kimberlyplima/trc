@@ -7,15 +7,28 @@
     IDarquivo = fopen(diretorio); 
     BitsComTrc = uint8(fread(IDarquivo, [1, inf], 'ubit1'));
     Tam = length(BitsComTrc);
+    BitsCorrompidos = 0;
     
-    for i = 1:Tam
-       BitACorromper = round((Tam*rand(1,1)));
+    for p = 7:-1:0
+        x = (Tam - p)/9;
+        
+        if (round(x) == x)
+            Contador = 9*x;
+            break
+        end
+    end
+        
+    for i = 1:Contador
+       BitACorromper = randi(Tam);
 
-       if (BitACorromper <= (round(Tam*0.03)))
-            BitsComTrc(i) = not(BitsComTrc(i));
+       if (rand(1) <= 0.03)
+            BitsComTrc(BitACorromper) = not(BitsComTrc(BitACorromper));
+            BitsCorrompidos = BitsCorrompidos + 1;
        end
     end
     
-    Filecodif = fopen('BitsCorrompidosComTRC.bin', 'w');
+    BitsCorrompidos
+
+    Filecodif = fopen('BitsCorrompidosComTRC.bin', 'wb');
     fwrite(Filecodif, BitsComTrc, 'ubit1');
     fclose(Filecodif);
